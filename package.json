@@ -1,20 +1,19 @@
 {
-    "name": "autocomplete-plus-jedi",
-    "main": "./lib/autocomplete-jedi",
-    "version": "0.0.1",
-    "description": "Add jedi based autocompletion plugin for Python.",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/fallenhitokiri/autocomplete-plus-jedi"
-    },
-    "license": "MIT",
-    "engines": {
-        "atom": ">0.50.0",
-        "node": "*"
-    },
-    "dependencies": {
-        "execsyncs": "0.1.1"
-    },
-    "devDependencies": {
-    }
+  "name": "autocomplete-plus-jedi",
+  "main": "./lib/autocomplete-jedi",
+  "version": "0.0.2",
+  "description": "Add jedi based autocompletion plugin for Python.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fallenhitokiri/autocomplete-plus-jedi"
+  },
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0",
+    "node": "*"
+  },
+  "dependencies": {
+    "execsyncs": "0.1.1"
+  },
+  "devDependencies": {}
 }
