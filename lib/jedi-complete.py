@@ -33,6 +33,6 @@ if __name__ == "__main__":
                 "docstring": completion.docstring(),
             })
 
-        print json.dumps(completions)
+        print(json.dumps(completions))
     except:
-        print []
+        print([])
