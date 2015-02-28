@@ -12,77 +12,17 @@
     "atom": ">0.50.0",
     "node": "*"
   },
-  "dependencies": {
-    "execsyncs": "0.1.1"
+  "providedServices": {
+    "autocomplete.provider": {
+      "versions": {
+        "1.1.0": "getProvider"
+      }
+    }
   },
-  "devDependencies": {},
   "readme": "# autocomplete-plus-jedi - Adding jedi based completions for Python to autocomplete-plus\n\n## Installation\nEither use Atoms package manager or `apm install autocomplete-plus-jedi`\n\n## Usage\nAPJ - let us just call it APJ, that's way shorter - uses the Python interpreter\nin your path. If you want to use it with a virtualenv just make sure the env is\nactive and start atom from the command line.\n\n## Warning\nThis addon is young, not feature complete and breaks when you use `'''` for\ndocstrings. But it is under active development, so eventually things will\nimprove.\n",
   "readmeFilename": "Readme.md",
   "bugs": {
     "url": "https://github.com/fallenhitokiri/autocomplete-plus-jedi/issues"
   },
-  "homepage": "https://github.com/fallenhitokiri/autocomplete-plus-jedi",
-  "_id": "autocomplete-plus-jedi@0.0.2",
-  "dist": {
-    "shasum": "7f6eb643c2a1d32c8427868a2af2f4cef9261674"
-  },
-  "_resolved": "/private/var/folders/1z/wyv04n6s3csbllwxd1svm4l80000gn/T/d-115021-12367-rb9tai/package.tgz",
-  "_from": "/private/var/folders/1z/wyv04n6s3csbllwxd1svm4l80000gn/T/d-115021-12367-rb9tai/package.tgz",
-  "_atomModuleCache": {
-    "version": 1,
-    "dependencies": [
-      {
-        "name": "execsyncs",
-        "version": "0.1.1",
-        "path": "node_modules/execsyncs/index.js"
-      },
-      {
-        "name": "nan",
-        "version": "1.5.1",
-        "path": "node_modules/execsyncs/node_modules/nan/include_dirs.js"
-      }
-    ],
-    "extensions": {
-      ".coffee": [
-        "lib/autocomplete-jedi.coffee",
-        "lib/jedi-provider.coffee"
-      ],
-      ".node": [
-        "node_modules/execsyncs/build/Release/shell.node",
-        "node_modules/execsyncs/build/Release/shell.node.dSYM/Contents/Resources/DWARF/shell.node"
-      ],
-      ".js": [
-        "node_modules/execsyncs/execsync.js",
-        "node_modules/execsyncs/index.js",
-        "node_modules/execsyncs/node_modules/nan/include_dirs.js"
-      ],
-      ".json": [
-        "node_modules/execsyncs/node_modules/nan/package.json",
-        "node_modules/execsyncs/package.json",
-        "package.json"
-      ]
-    },
-    "folders": [
-      {
-        "paths": [
-          "lib",
-          ""
-        ],
-        "dependencies": {
-          "execsyncs": "0.1.1"
-        }
-      },
-      {
-        "paths": [
-          "node_modules/execsyncs/build/Release",
-          "node_modules/execsyncs/build/Release/shell.node.dSYM/Contents/Resources/DWARF",
-          "node_modules/execsyncs",
-          "node_modules/execsyncs/test"
-        ],
-        "dependencies": {
-          "nan": "^1.2.0"
-        }
-      }
-    ]
-  }
+  "homepage": "https://github.com/fallenhitokiri/autocomplete-plus-jedi"
 }

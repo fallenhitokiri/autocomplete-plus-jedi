@@ -1,22 +1,17 @@
-path = require 'path'
-sh = require 'execsyncs'
+exec = require('child_process').exec;
 
 module.exports =
-ProviderClass: (Provider, Suggestion, dispatch)  ->
-  class JediProvider extends Provider
-    exclusive: true
+  selector: '.source.py,'
+  blacklist: '.source.py .comment'
 
-    buildSuggestions: ->
-      return if @isPython() is false
-      return if @shouldNotComplete() is true
+  requestHandler: (options) ->
+    return new Promise (resolve) ->
       suggestions = []
-      @findSuggestions(suggestions)
-      return suggestions
 
-    findSuggestions: (suggestions) ->
-      text = @editor.buffer.cachedText
-      row = @editor.getCursor().getBufferPosition().row
-      column = @editor.getCursor().getBufferPosition().column
+      # get current text
+      text = options.buffer.cachedText
+      row = options.cursor.getBufferPosition().row
+      column = options.cursor.getBufferPosition().column
 
       escaped = text.replace(/'/g, "''")
 
@@ -24,82 +19,35 @@ ProviderClass: (Provider, Suggestion, dispatch)  ->
       # TODO: this breaks when a docstring uses '''
       command = "python " + __dirname + "/jedi-complete.py '" + escaped + "' " + row + " " + column
 
-      response = "" + sh command
-      return unless response != ""
+      exec command, (error, stdout, stderr) ->
+        resolve(suggestions) unless stdout != ""
 
-      jedi = JSON.parse response
-      prefix = @getPrefix()
+        jediResponse = JSON.parse stdout
+        
+        # get prefix
+        lines = text.split "\n"
+        line = lines[row]
 
-      for index of jedi
-        suggestions.push(new Suggestion(this, word: jedi[index].name, prefix:prefix, label: jedi[index].description))
+        # generate a list of potential prefixes
+        indexes = []
+        indexes.push line.substr(line.lastIndexOf(" ") + 1)
+        indexes.push line.substr(line.lastIndexOf("(") + 2)
+        indexes.push line.substr(line.lastIndexOf(".") + 1)
 
-    isPython: ->
-      fileName = path.basename @editor.getBuffer().getPath()
+        # sort array by string length - shortest element is the prefix
+        prefix = indexes.sort((a, b) ->
+          a.length - b.length
+        )[0]
 
-      # fileName can be undefined if we are in a popover e.x.
-      if fileName == undefined
-        return false
+        # build suggestions
+        for index of jediResponse
+          suggestions.push({
+            word: jediResponse[index].name,
+            prefix:prefix,
+            label: jediResponse[index].description
+          })
 
-      found = fileName.indexOf(".py", fileName.length - 3)
+        resolve(suggestions)
 
-      if found != -1
-        return true
-
-      return false
-
-    shouldNotComplete: ->
-      text = @editor.buffer.cachedText
-      row = @editor.getCursor().getBufferPosition().row
-      column = @editor.getCursor().getBufferPosition().column
-
-      lines = text.split "\n"
-      line = lines[row]
-
-      # do not complete after a colon
-      if line.indexOf(":") != -1
-        index = line.lastIndexOf(":")
-        index = index + 1
-        return true if index == column
-
-      # do not complete comments
-      if line.indexOf("#") != -1
-        index = line.indexOf("#")
-        double = line.indexOf("\"")
-        single = line.indexOf("'")
-
-        # if we find a sharp and no quotes, do not complete
-        return true if double == -1 and single == -1
-
-        # complete if the sharp character is between quotation marks
-        if double != -1
-          rdouble = line.lastIndexOf("\"")
-          console.log double < index < rdouble
-          return false if double < index < rdouble
-
-        # complete if the sharp character is between single quotation marks
-        if single != -1
-          rsingle = line.lastIndexOf("'")
-          return false if single < index < rsingle
-
-      return false
-
-    getPrefix: ->
-      text = @editor.buffer.cachedText
-      row = @editor.getCursor().getBufferPosition().row
-      column = @editor.getCursor().getBufferPosition().column
-
-      lines = text.split "\n"
-      line = lines[row]
-
-      # generate a list of potential prefixes
-      indexes = []
-      indexes.push line.substr(line.lastIndexOf(" ") + 1)
-      indexes.push line.substr(line.lastIndexOf("(") + 2)
-      indexes.push line.substr(line.lastIndexOf(".") + 1)
-
-      # sort array by string length - shortest element is the prefix
-      prefix = indexes.sort((a, b) ->
-        a.length - b.length
-      )[0]
-
-      return prefix
+  loaded: ->
+    return
