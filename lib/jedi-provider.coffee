@@ -1,8 +1,17 @@
 exec = require('child_process').exec;
+path = require 'path'
+
 
 module.exports =
-  selector: '.source.py,'
-  blacklist: '.source.py .comment'
+class JediProvider
+  id: 'autocomplete-plus-jedi'
+  selector: '.source.python'
+  providerblacklist: null
+
+  constructor: ->
+    @providerblacklist =
+      'autocomplete-plus-fuzzyprovider': '.source.python'
+      'autocomplete-plus-symbolprovider': '.source.python'
 
   requestHandler: (options) ->
     return new Promise (resolve) ->
@@ -15,9 +24,11 @@ module.exports =
 
       escaped = text.replace(/'/g, "''")
 
-      # completion scripts expects 3 arguments: text, current line and column
+      projectPath = atom.project.getPath()
+
+      # completion scripts expects 4 arguments: text, current line, column and project path
       # TODO: this breaks when a docstring uses '''
-      command = "python " + __dirname + "/jedi-complete.py '" + escaped + "' " + row + " " + column
+      command = "python " + __dirname + "/jedi-complete.py '" + escaped + "' " + row + " " + column + " " + projectPath
 
       exec command, (error, stdout, stderr) ->
         resolve(suggestions) unless stdout != ""
@@ -41,13 +52,15 @@ module.exports =
 
         # build suggestions
         for index of jediResponse
+          label = jediResponse[index].description
+
+          if label.length > 80
+            label = label.substr(0, 80)
+
           suggestions.push({
             word: jediResponse[index].name,
-            prefix:prefix,
-            label: jediResponse[index].description
+            prefix: prefix,
+            label: label
           })
 
         resolve(suggestions)
-
-  loaded: ->
-    return

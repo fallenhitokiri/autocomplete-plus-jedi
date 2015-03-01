@@ -1,5 +1,10 @@
-provider = require './jedi-provider'
+JediProvider = require './jedi-provider'
 
 module.exports =
-  activate: -> provider.loaded()
-  getProvider: -> providers: [provider]
+  provider: null
+
+  activate: ->
+  	@provider = new JediProvider()
+
+  getProvider: ->
+  	return {providers: [@provider]}

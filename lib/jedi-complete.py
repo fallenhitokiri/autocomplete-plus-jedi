@@ -2,7 +2,6 @@
 import os
 import sys
 import json
-import ast
 
 sys.path.append(os.path.realpath(__file__))
 
@@ -17,6 +16,9 @@ if __name__ == "__main__":
         source = sys.argv[1]
         line = int(sys.argv[2])
         col = int(sys.argv[3])
+        project_path = sys.argv[4]
+
+        sys.path.append(project_path)
 
         script = jedi.api.Script(
             source=source,
