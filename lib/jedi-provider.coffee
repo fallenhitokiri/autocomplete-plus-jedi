@@ -32,6 +32,8 @@ class JediProvider
 
       exec command, (error, stdout, stderr) ->
         resolve(suggestions) unless stdout != ""
+        resolve(suggestions) unless stderr != ""
+        resolve(suggestions) unless error != null
 
         jediResponse = JSON.parse stdout
         
