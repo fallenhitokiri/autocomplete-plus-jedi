@@ -1,5 +1,4 @@
-exec = require('child_process').exec;
-path = require 'path'
+{$} = require 'atom'
 
 
 module.exports =
@@ -22,47 +21,47 @@ class JediProvider
       row = options.cursor.getBufferPosition().row
       column = options.cursor.getBufferPosition().column
 
-      escaped = text.replace(/'/g, "''")
+      payload =
+        source: text
+        line: row
+        column: column
 
-      projectPath = atom.project.getPath()
+      $.ajax
+        url: 'http://127.0.0.1:7777'
+        type: 'POST'
+        data: JSON.stringify payload
 
-      # completion scripts expects 4 arguments: text, current line, column and project path
-      # TODO: this breaks when a docstring uses '''
-      command = "python " + __dirname + "/jedi-complete.py '" + escaped + "' " + row + " " + column + " " + projectPath
+        success: (data) ->
+          # get prefix
+          lines = text.split "\n"
+          line = lines[row]
 
-      exec command, (error, stdout, stderr) ->
-        resolve(suggestions) unless stdout != ""
-        resolve(suggestions) unless stderr != ""
-        resolve(suggestions) unless error != null
+          # generate a list of potential prefixes
+          indexes = []
+          indexes.push line.substr(line.lastIndexOf(" ") + 1)
+          indexes.push line.substr(line.lastIndexOf("(") + 2)
+          indexes.push line.substr(line.lastIndexOf(".") + 1)
 
-        jediResponse = JSON.parse stdout
-        
-        # get prefix
-        lines = text.split "\n"
-        line = lines[row]
+          # sort array by string length - shortest element is the prefix
+          prefix = indexes.sort((a, b) ->
+            a.length - b.length
+          )[0]
 
-        # generate a list of potential prefixes
-        indexes = []
-        indexes.push line.substr(line.lastIndexOf(" ") + 1)
-        indexes.push line.substr(line.lastIndexOf("(") + 2)
-        indexes.push line.substr(line.lastIndexOf(".") + 1)
+          # build suggestions
+          for index of data
+            label = data[index].description
 
-        # sort array by string length - shortest element is the prefix
-        prefix = indexes.sort((a, b) ->
-          a.length - b.length
-        )[0]
+            if label.length > 80
+              label = label.substr(0, 80)
 
-        # build suggestions
-        for index of jediResponse
-          label = jediResponse[index].description
+            suggestions.push({
+              word: data[index].name,
+              prefix: prefix,
+              label: label
+            })
 
-          if label.length > 80
-            label = label.substr(0, 80)
+            resolve(suggestions)
 
-          suggestions.push({
-            word: jediResponse[index].name,
-            prefix: prefix,
-            label: label
-          })
-
-        resolve(suggestions)
+        error: (data) ->
+          console.log "Error communicating with server"
+          console.log data
