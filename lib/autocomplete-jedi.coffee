@@ -6,16 +6,16 @@ module.exports =
   jediServer: null
 
   activate: ->
-  	if !@jediServer
-  	  projectPath = atom.project.getPath()
-  	  command = "python " + __dirname + "/jedi-complete.py '" + projectPath + "'"
+    if !@jediServer
+      projectPath = atom.project.getPath()
+      command = "python " + __dirname + "/jedi-complete.py '" + projectPath + "'"
 
-  	  @jediServer = cp.exec command
+      @jediServer = cp.exec command
 
-  	@provider = new JediProvider()
+    @provider = new JediProvider()
 
   deactivate: ->
-  	@jediServer.kill()
+    @jediServer.kill()
 
   getProvider: ->
-  	return {providers: [@provider]}
+    return {providers: [@provider]}
