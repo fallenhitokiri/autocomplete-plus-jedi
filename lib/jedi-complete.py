@@ -42,9 +42,14 @@ class http_completion(BaseHTTPRequestHandler):
         return
 
 
-def run_server():
-    """run the httpd"""
-    address = ('', 7777)
+def run_server(port):
+    """
+    run the httpd
+
+    Arguments:
+        port: port to run the server on
+    """
+    address = ('', port)
     httpd = HTTPServer(address, http_completion)
     print "Starting httpd"
     httpd.serve_forever()
@@ -84,4 +89,14 @@ if __name__ == "__main__":
     project_path = sys.argv[1]
     sys.path.append(project_path)
 
-    run_server()
+    port = 7777
+
+    # try to start the httpd on a port between 7777 and 7999
+    while port < 7999:
+        try:
+            try:
+                run_server(port)
+            except KeyboardInterrupt:
+                break
+        except:
+            port += 1
