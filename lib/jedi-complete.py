@@ -20,6 +20,12 @@ class http_completion(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
 
+    def do_GET(self):
+        """just return an empty page - used to discover the correct port"""
+        self._set_headers()
+        self.wfile.write("")
+        return
+
     def do_POST(self):
         """
         Payload to receive:
