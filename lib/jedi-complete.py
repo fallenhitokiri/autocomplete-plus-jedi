@@ -57,7 +57,7 @@ def run_server():
             if exc.__class__ == KeyboardInterrupt:
                 break
 
-            time.sleep(5)
+            time.sleep(1)
 
 
 def completions(source, line, column):
