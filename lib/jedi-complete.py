@@ -3,6 +3,8 @@ import os
 import sys
 import json
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import socket
+import time
 
 sys.path.append(os.path.realpath(__file__))
 
@@ -45,9 +47,17 @@ class http_completion(BaseHTTPRequestHandler):
 def run_server():
     """run the httpd"""
     address = ('', 7777)
-    httpd = HTTPServer(address, http_completion)
-    print "Starting httpd"
-    httpd.serve_forever()
+
+    while True:
+        try:
+            print "Starting httpd"
+            httpd = HTTPServer(address, http_completion)
+            httpd.serve_forever()
+        except (socket.error, KeyboardInterrupt) as exc:
+            if exc.__class__ == KeyboardInterrupt:
+                break
+
+            time.sleep(5)
 
 
 def completions(source, line, column):
