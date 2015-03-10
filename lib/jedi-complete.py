@@ -57,6 +57,8 @@ def run_server():
             if exc.__class__ == KeyboardInterrupt:
                 break
 
+            # If we cannot bind to the port sleep wait 1 second and retry.
+            # This can happen when reloading Atom e.x.
             time.sleep(1)
 
 
