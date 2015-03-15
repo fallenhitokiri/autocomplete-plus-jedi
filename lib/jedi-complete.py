@@ -2,7 +2,12 @@
 import os
 import sys
 import json
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+
+try:
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+except ImportError:
+    from http.server import BaseHTTPRequestHandler,HTTPServer
+
 import socket
 import time
 
@@ -33,12 +38,19 @@ class http_completion(BaseHTTPRequestHandler):
         """
         self._set_headers()
 
-        length = int(self.headers.getheader('content-length', 0))
+        length = int(self.headers.get('content-length', 0))
         read = self.rfile.read(length)
+
+        if sys.version_info >= (3, 0):
+            read = read.decode('utf-8')
+
         read = json.loads(read)
 
         payload = completions(read["source"], read["line"], read["column"])
         payload = json.dumps(payload)
+
+        if sys.version_info >= (3, 0):
+            payload = payload.encode('utf-8')
 
         self.wfile.write(payload)
         return
@@ -50,10 +62,11 @@ def run_server():
 
     while True:
         try:
-            print "Starting httpd"
+            print("Starting httpd")
             httpd = HTTPServer(address, http_completion)
             httpd.serve_forever()
         except (socket.error, KeyboardInterrupt) as exc:
+            print(exc)
             if exc.__class__ == KeyboardInterrupt:
                 break
 
