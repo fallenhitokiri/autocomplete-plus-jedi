@@ -33,19 +33,8 @@ class JediProvider
 
         success: (data) ->
           # get prefix
-          lines = text.split "\n"
-          line = lines[row]
-
-          # generate a list of potential prefixes
-          indexes = []
-          indexes.push line.substr(line.lastIndexOf(" ") + 1)
-          indexes.push line.substr(line.lastIndexOf("(") + 2)
-          indexes.push line.substr(line.lastIndexOf(".") + 1)
-
-          # sort array by string length - shortest element is the prefix
-          prefix = indexes.sort((a, b) ->
-            a.length - b.length
-          )[0]
+          regex = /[a-z|A-Z|_0-9-]+$/
+          prefix = options.prefix.match(regex)?[0] or ''
 
           # build suggestions
           for index of data
@@ -60,7 +49,7 @@ class JediProvider
               label: label
             })
 
-            resolve(suggestions)
+          resolve(suggestions)
 
         error: (data) ->
           console.log "Error communicating with server"
