@@ -1,7 +1,7 @@
 {
   "name": "autocomplete-plus-jedi",
   "main": "./lib/autocomplete-jedi",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Add jedi based autocompletion plugin for Python.",
   "repository": {
     "type": "git",
